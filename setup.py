@@ -8,15 +8,15 @@ with open('README.md', encoding='utf-8') as f:
 #     requirements = f.read().splitlines()
 
 setuptools.setup(
-    version="1.0.0",
+    version="1.0.1",
     name="asyncrcon",
     author="zekro",
     author_email="contact@zekro.de",
     description="Client implementation of Minecrafts RCON protocol using asyncio",
     long_description=long_desc,
     long_description_content_type="text/markdown",
-    url="https://github.com/zekrotja/pytter",
-    download_url='https://github.com/zekrotja/pytter/archive/master.tar.gz',
+    url="https://github.com/zekrotja/asyncrcon",
+    download_url='https://github.com/zekrotja/asyncrcon/archive/master.tar.gz',
     packages=setuptools.find_packages(),
     # install_requires=requirements,
     classifiers=[
