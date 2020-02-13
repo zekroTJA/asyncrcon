@@ -1,5 +1,6 @@
 import asyncio
 import argparse
+import logging
 from asyncrcon import AsyncRCON, AuthenticationException
 
 
@@ -8,7 +9,12 @@ def main():
     parser = argparse.ArgumentParser('rconcmd')
     parser.add_argument('--address', '-a', type=str, required=True, help='RCON address')
     parser.add_argument('--password', '-p', type=str, required=True, help='RCON password')
+    parser.add_argument('--log-level', '-l', type=int, default=20, help='Log Level')
     argv = parser.parse_args()
+
+    logging.basicConfig(
+        level=argv.log_level,
+        format='%(levelname)s | %(name)s | %(message)s')
 
     # Getting asyncio event loop to execute
     # input loop asyncronously
@@ -37,6 +43,7 @@ async def input_loop(addr: str, pw: str):
 
         # Check if user wants to quit console
         if inpt.lower() in ['q', 'e', 'exit', 'quit']:
+            rcon.close()
             print('Bye.')
             break
 
