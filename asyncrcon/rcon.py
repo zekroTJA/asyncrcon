@@ -34,20 +34,27 @@ class AsyncRCON:
     _port: int
     _passwd: str
     _max_command_retries: int
+    _auto_reconnect: bool
 
     _writer: StreamWriter
     _reader: StreamReader
 
-    def __init__(self, addr: str, passwd: str, max_command_retries: Optional[int] = 10):
+    _logger: logging.Logger
+
+    def __init__(self, addr: str, passwd: str,
+                 max_command_retries: Optional[int] = 10,
+                 auto_reconnect: Optional[bool] = True):
         self._passwd = passwd
         addr_split = addr.split(':', 1)
         self._addr = addr_split[0]
         self._port = int(addr_split[1]) if len(addr_split) > 1 \
             else _DEFAULT_RCON_PORT
         self._max_command_retries = max_command_retries
+        self._auto_reconnect = auto_reconnect
+        self._logger = logging.getLogger('asyncrcon')
 
     async def open_connection(self):
-        """ |coro|
+        """|coro|
         Open connection event loop and log
         in to the RCON server.
 
@@ -142,17 +149,27 @@ class AsyncRCON:
         """
 
         data = b''
-        logging.debug('RCON: --> start rec')
+        self._logger.debug('--> start rec')
         while True:
             packet, ln = Packet.decode(data)
             if packet:
-                logging.debug('RCON: finished rec')
+                self._logger.debug('--> finished rec')
                 return packet
+
             while len(data) < ln:
-                data += await self._reader.read(ln - len(data))
+                try:
+                    data += await self._reader.read(ln - len(data))
+                except OSError as e:
+                    if not self._auto_reconnect:
+                        raise e
+                    self._logger.warning('Connection was closed. Try reconnecting...')
+                    self.close()
+                    await self.open_connection()
+
                 if len(data) == 0:
                     raise NulLResponseException()
-                logging.debug('RCON: package {}, {}, {}'.format(data, len(data), ln))
+
+                self._logger.debug('package {}, {}, {}'.format(data, len(data), ln))
 
     def _send(self, packet: Packet):
         """
@@ -161,5 +178,5 @@ class AsyncRCON:
         Arguments:
             packet {Packet} -- data packet
         """
-        logging.debug('RCON: <-- send {}'.format(packet.payload))
+        self._logger.debug('<-- send {}'.format(packet.payload))
         self._writer.write(packet.encode())
