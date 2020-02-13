@@ -4,10 +4,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>asyncrcon API documentation</title>
-    <meta name="description" content="# asyncrcon
-
-asyncrcon is a client side implementation of the Minecraft RCON protocol
-using asyncio ..." />
+    <meta name="description" content="asyncrcon is a client side implementation of the Minecraft RCON protocol
+using asyncio sockets for n..." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -1065,17 +1063,67 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">asyncrcon</span> module</h1>
-  <h1>asyncrcon</h1>
-<p>asyncrcon is a client side implementation of the Minecraft RCON protocol
+  <p>asyncrcon is a client side implementation of the Minecraft RCON protocol
 using asyncio sockets for non-blocing socket handling.</p>
+<h1>Links</h1>
+<ul>
+<li><a href="https://zekroTJA.github.io/asyncrcon"><strong>Docs</strong></a></li>
+<li><a href="https://github.com/zekroTJA/asyncrcon"><strong>Source Code</strong></a></li>
+<li><a href="https://github.com/zekroTJA/asyncrcon/tree/master/examples"><strong>Examples</strong></a></li>
+<li><a href="https://github.com/zekroTJA/asyncrcon/tree/master/LICENSE"><strong>License</strong></a></li>
+</ul>
+<h1>Usage Example</h1>
+<p>For more examples, see <a href="https://github.com/zekroTJA/asyncrcon/tree/master/examples"><strong>here</strong></a>.</p>
+<p>Here, we are opening a RCON connection to add a given user to the servers whitelist. Then, we close the connection.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">asyncrcon</span> <span class="kn">import</span> <span class="n">AsyncRCON</span><span class="p">,</span> <span class="n">AuthenticationException</span>
+
+<span class="n">async</span> <span class="k">def</span> <span class="nf">add_to_whitelist</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">rcon</span> <span class="o">=</span> <span class="n">AsyncRCON</span><span class="p">(</span><span class="s1">&#39;loclahost:25575&#39;</span><span class="p">,</span> <span class="s1">&#39;secretRCONPassword&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">await</span> <span class="n">rcon</span><span class="o">.</span><span class="n">open_connection</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">AuthenticationException</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Login failed: Unauthorized.&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">await</span> <span class="n">rcon</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;whitelist add {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+    <span class="n">rcon</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-asyncrcon', this);">Show source &equiv;</a></p>
   <div id="source-asyncrcon" class="source">
     <div class="codehilite"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd"># asyncrcon</span>
-
 <span class="sd">asyncrcon is a client side implementation of the Minecraft RCON protocol</span>
 <span class="sd">using asyncio sockets for non-blocing socket handling.</span>
+
+<span class="sd"># Links</span>
+
+<span class="sd">- [**Docs**](https://zekroTJA.github.io/asyncrcon)</span>
+<span class="sd">- [**Source Code**](https://github.com/zekroTJA/asyncrcon)</span>
+<span class="sd">- [**Examples**](https://github.com/zekroTJA/asyncrcon/tree/master/examples)</span>
+<span class="sd">- [**License**](https://github.com/zekroTJA/asyncrcon/tree/master/LICENSE)</span>
+
+<span class="sd"># Usage Example</span>
+
+<span class="sd">For more examples, see [**here**](https://github.com/zekroTJA/asyncrcon/tree/master/examples).</span>
+
+<span class="sd">Here, we are opening a RCON connection to add a given user to the servers whitelist. Then, we close the connection.</span>
+
+<span class="sd">    from asyncrcon import AsyncRCON, AuthenticationException</span>
+
+<span class="sd">    async def add_to_whitelist(user: str):</span>
+<span class="sd">        rcon = AsyncRCON(&#39;loclahost:25575&#39;, &#39;secretRCONPassword&#39;)</span>
+<span class="sd">        try:</span>
+<span class="sd">            await rcon.open_connection()</span>
+<span class="sd">        except AuthenticationException:</span>
+<span class="sd">            print(&#39;Login failed: Unauthorized.&#39;)</span>
+<span class="sd">            return</span>
+
+<span class="sd">        res = await rcon.command(&#39;whitelist add {}&#39;.format(user))</span>
+<span class="sd">        print(res)</span>
+
+<span class="sd">        rcon.close()</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># flake8: noqa</span>
@@ -1085,7 +1133,7 @@ using asyncio sockets for non-blocing socket handling.</p>
 <span class="n">__version__</span>   <span class="o">=</span> <span class="s1">&#39;1.0.0&#39;</span>
 <span class="n">__licence__</span>   <span class="o">=</span> <span class="s1">&#39;Apache Licence 2.0&#39;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s1">&#39;(c) 2020 Ringo Hoffmann (zekro Development)&#39;</span>
-<span class="n">__url__</span>       <span class="o">=</span> <span class="s1">&#39;https://github.com/zekroTJA/async-rcon&#39;</span>
+<span class="n">__url__</span>       <span class="o">=</span> <span class="s1">&#39;https://github.com/zekroTJA/asyncrcon&#39;</span>
 
 
 <span class="kn">from</span> <span class="nn">.rcon</span> <span class="kn">import</span> <span class="o">*</span>

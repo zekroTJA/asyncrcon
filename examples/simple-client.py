@@ -1,6 +1,6 @@
 import asyncio
 import argparse
-from asyncrcon import AsyncRCON
+from asyncrcon import AsyncRCON, AuthenticationException
 
 
 def main():
@@ -20,7 +20,11 @@ def main():
 async def input_loop(addr: str, pw: str):
     # Connecto to RCON server
     rcon = AsyncRCON(addr, pw)
-    await rcon.open_connection()
+    try:
+        await rcon.open_connection()
+    except AuthenticationException:
+        print('Login failed: Unauthorized.')
+        return
 
     print('Connected to {}.'.format(addr))
 
