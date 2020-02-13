@@ -1,7 +1,12 @@
 # asyncrcon
+[![PyPI](https://img.shields.io/pypi/v/asyncrcon)](https://pypi.org/project/asyncrcon/)&nbsp;[![](https://img.shields.io/badge/docs-passing-brightgreen)](https://zekroTJA.github.io/asyncrcon)
 
 asyncrcon is a client side implementation of the Minecraft RCON protocol
 using asyncio sockets for non-blocing socket handling.
+
+```
+pip install asyncrcon
+```
 
 # Links
 
