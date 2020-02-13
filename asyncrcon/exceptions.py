@@ -41,5 +41,5 @@ class MaxRetriesExceedException(Exception):
     """
 
     def __init__(self):
-        super(NulLResponseException, self).__init__(
+        super(MaxRetriesExceedException, self).__init__(
             'maximum ammount of command retries was exceed')
