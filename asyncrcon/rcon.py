@@ -7,10 +7,10 @@ from .exceptions import \
     AuthenticationException, NulLResponseException, MaxRetriesExceedException
 
 
-DEFAULT_RCON_PORT = 25575
-CMD_LOGIN = 3
-CMD_RUN = 2
-CMD_RESPONSE = 0
+_DEFAULT_RCON_PORT = 25575
+_CMD_LOGIN = 3
+_CMD_RUN = 2
+_CMD_RESPONSE = 0
 
 
 class AsyncRCON:
@@ -43,7 +43,7 @@ class AsyncRCON:
         addr_split = addr.split(':', 1)
         self._addr = addr_split[0]
         self._port = int(addr_split[1]) if len(addr_split) > 1 \
-            else DEFAULT_RCON_PORT
+            else _DEFAULT_RCON_PORT
         self._max_command_retries = max_command_retries
 
     async def open_connection(self):
@@ -58,7 +58,7 @@ class AsyncRCON:
         self._reader, self._writer = await asyncio.open_connection(
             self._addr, self._port)
 
-        self._send(Packet(0, CMD_LOGIN, self._passwd))
+        self._send(Packet(0, _CMD_LOGIN, self._passwd))
 
         packet = await self._receive()
 
@@ -111,8 +111,8 @@ class AsyncRCON:
         Arguments:
             cmd {str} -- command literal
         """
-        self._send(Packet(0, CMD_RUN, cmd))
-        self._send(Packet(1, CMD_RESPONSE, ''))
+        self._send(Packet(0, _CMD_RUN, cmd))
+        self._send(Packet(1, _CMD_RESPONSE, ''))
 
     async def _rec_command(self) -> str:
         """|coro|
