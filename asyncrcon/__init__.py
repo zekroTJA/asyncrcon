@@ -1,3 +1,12 @@
+"""
+# asyncrcon
+
+asyncrcon is a client side implementation of the Minecraft RCON protocol
+using asyncio sockets for non-blocing socket handling.
+"""
+
+# flake8: noqa
+
 __title__     = 'asyncrcon'
 __aurhot__    = 'zekro'
 __version__   = '1.0.0'
