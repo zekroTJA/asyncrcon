@@ -22,7 +22,7 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "License :: OSI Approved :: Apache Licence 2.0",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         'Topic :: Software Development :: Libraries',
     ],
