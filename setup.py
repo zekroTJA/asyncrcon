@@ -8,7 +8,7 @@ with open('README.md', encoding='utf-8') as f:
 #     requirements = f.read().splitlines()
 
 setuptools.setup(
-    version="1.0.1",
+    version="1.1.0",
     name="asyncrcon",
     author="zekro",
     author_email="contact@zekro.de",
