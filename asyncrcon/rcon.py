@@ -35,6 +35,7 @@ class AsyncRCON:
     _passwd: str
     _max_command_retries: int
     _auto_reconnect: bool
+    _encoding: str
 
     _writer: StreamWriter
     _reader: StreamReader
@@ -53,6 +54,7 @@ class AsyncRCON:
         self._max_command_retries = max_command_retries
         self._auto_reconnect = auto_reconnect
         self._logger = logging.getLogger('asyncrcon')
+        self._encoding = encoding
 
     async def open_connection(self):
         """|coro|
@@ -152,7 +154,7 @@ class AsyncRCON:
         data = b''
         self._logger.debug('--> start rec')
         while True:
-            packet, ln = Packet.decode(data)
+            packet, ln = Packet.decode(data, charset=self._encoding)
             if packet:
                 self._logger.debug('--> finished rec')
                 return packet
@@ -180,4 +182,4 @@ class AsyncRCON:
             packet {Packet} -- data packet
         """
         self._logger.debug('<-- send {}'.format(packet.payload))
-        self._writer.write(packet.encode())
+        self._writer.write(packet.encode(charset=self._encoding))
