@@ -53,7 +53,7 @@ class Packet:
         self.cmd = cmd
         self.payload = payload
 
-    def encode(self) -> bytes:
+    def encode(self, charset='utf-8') -> bytes:
         """
         Encode packet into raw binary data.
 
@@ -61,12 +61,12 @@ class Packet:
             bytes -- raw binary packet data
         """
         data = struct.pack('<ii', self.ident, self.cmd) + \
-            self.payload.encode('utf-8') + b'\x00\x00'
+            self.payload.encode(charset) + b'\x00\x00'
         ln = struct.pack('<i', len(data))
         return ln + data
 
     @staticmethod
-    def decode(data: bytes) -> (object, int):
+    def decode(data: bytes, charset='utf-8') -> (object, int):
         """
         Decode packet from raw data.
 
@@ -89,7 +89,7 @@ class Packet:
             return (None, ln)
 
         ident, cmd = struct.unpack('<ii', data[4:12])
-        payload = data[12:-2].decode('utf-8')
+        payload = data[12:-2].decode(charset)
 
         padding = data[-2:]
         if padding != b'\x00\x00':

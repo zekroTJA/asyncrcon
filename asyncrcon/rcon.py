@@ -43,7 +43,8 @@ class AsyncRCON:
 
     def __init__(self, addr: str, passwd: str,
                  max_command_retries: Optional[int] = 10,
-                 auto_reconnect: Optional[bool] = True):
+                 auto_reconnect: Optional[bool] = True,
+                 encoding: Optional[str] = 'utf-8'):
         self._passwd = passwd
         addr_split = addr.split(':', 1)
         self._addr = addr_split[0]
