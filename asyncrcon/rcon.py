@@ -68,7 +68,7 @@ class AsyncRCON:
         self._reader, self._writer = await asyncio.open_connection(
             self._addr, self._port)
 
-        self._send(Packet(0, _CMD_LOGIN, self._passwd))
+        await self._send(Packet(0, _CMD_LOGIN, self._passwd))
 
         packet = await self._receive()
 
@@ -79,7 +79,7 @@ class AsyncRCON:
         """|coro|
         Execute a command over RCON and wait
         for response. If the command reponse is
-        empty or erroeus
+        empty or error
 
         Arguments:
             cmd {str} -- command literal
@@ -90,19 +90,24 @@ class AsyncRCON:
         Returns:
             str -- RCON server response (may be empty in some cases)
         """
-        self._send_command(cmd)
+        await self._send_command(cmd)
 
         for _ in range(0, 10):
             try:
                 return await self._rec_command()
             except NulLResponseException:
+                self._logger.debug('retry')               
                 self.close()
                 await self.open_connection()
-                self._send_command(cmd)
+                await self._send_command(cmd)
                 continue
 
         raise MaxRetriesExceedException
 
+    async def command_with_one_response(self, cmd):
+        await self._send(Packet(0, _CMD_RUN, cmd))
+        return (await self._receive()).payload
+        
     def close(self):
         """
         Close the socket connection to the
@@ -111,7 +116,7 @@ class AsyncRCON:
 
         self._writer.close()
 
-    def _send_command(self, cmd: str):
+    async def _send_command(self, cmd: str):
         """
         Command sending wrapper.
         Sends the actual command package and another
@@ -121,8 +126,8 @@ class AsyncRCON:
         Arguments:
             cmd {str} -- command literal
         """
-        self._send(Packet(0, _CMD_RUN, cmd))
-        self._send(Packet(1, _CMD_RESPONSE, ''))
+        await self._send(Packet(0, _CMD_RUN, cmd))
+        await self._send(Packet(1, _CMD_RESPONSE, ''))
 
     async def _rec_command(self) -> str:
         """|coro|
@@ -135,6 +140,7 @@ class AsyncRCON:
         res = ''
         while True:
             packet = await self._receive()
+            self._logger.debug('Recv Packet ID is #%d', packet.ident)
             if packet.ident != 0:
                 break
             res += packet.payload
@@ -152,11 +158,11 @@ class AsyncRCON:
         """
 
         data = b''
-        self._logger.debug('--> start rec')
+        self._logger.debug('--> start recv')
         while True:
             packet, ln = Packet.decode(data, charset=self._encoding)
-            if packet:
-                self._logger.debug('--> finished rec')
+            if packet is not None:
+                self._logger.debug('--> finished recv')
                 return packet
 
             while len(data) < ln:
@@ -174,7 +180,7 @@ class AsyncRCON:
 
                 self._logger.debug('package {}, {}, {}'.format(data, len(data), ln))
 
-    def _send(self, packet: Packet):
+    async def _send(self, packet: Packet):
         """
         Send encoded data packet.
 
@@ -183,3 +189,4 @@ class AsyncRCON:
         """
         self._logger.debug('<-- send {}'.format(packet.payload))
         self._writer.write(packet.encode(charset=self._encoding))
+        await self._writer.drain()
