@@ -35,7 +35,7 @@ Here, we are opening a RCON connection to add a given user to the servers whitel
 
 __title__     = 'asyncrcon'
 __aurhot__    = 'zekro'
-__version__   = '1.1.2'
+__version__   = '1.1.3'
 __licence__   = 'Apache Licence 2.0'
 __copyright__ = '(c) 2020 Ringo Hoffmann (zekro Development)'
 __url__       = 'https://github.com/zekroTJA/asyncrcon'
