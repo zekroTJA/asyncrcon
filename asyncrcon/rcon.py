@@ -167,7 +167,7 @@ class AsyncRCON:
 
             while len(data) < ln:
                 try:
-                    data += await self._reader.read(ln - len(data))
+                    chunk = await self._reader.read(ln - len(data))
                 except OSError as e:
                     if not self._auto_reconnect:
                         raise e
@@ -175,9 +175,9 @@ class AsyncRCON:
                     self.close()
                     await self.open_connection()
 
-                if len(data) == 0:
+                if len(chunk) == 0:
                     raise NulLResponseException()
-
+                data += chunk
                 self._logger.debug('package {}, {}, {}'.format(data, len(data), ln))
 
     async def _send(self, packet: Packet):
