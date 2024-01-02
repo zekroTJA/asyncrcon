@@ -8,9 +8,13 @@ from .exceptions import \
 
 
 _DEFAULT_RCON_PORT = 25575
+# Sent to server
 _CMD_LOGIN = 3
 _CMD_RUN = 2
+
+# Received from the server
 _CMD_RESPONSE = 0
+_CMD_AUTH_RESPONSE = 2
 
 
 class AsyncRCON:
@@ -72,7 +76,14 @@ class AsyncRCON:
 
         packet = await self._receive()
 
-        if packet.ident == -1:
+        # Some server always send an empty response first
+        if packet.cmd == _CMD_RESPONSE and len(packet.payload) == 0:
+            self._logger.debug("Got empty response in open_connection, waiting for another packet")
+            # Throw it away and get a new one
+            packet = await self._receive()
+
+        # Now check for an auth response next from the server
+        if packet.cmd != _CMD_AUTH_RESPONSE or packet.ident == -1:
             raise AuthenticationException
 
     async def command(self, cmd: str) -> str:
@@ -113,8 +124,10 @@ class AsyncRCON:
         Close the socket connection to the
         RCON server.
         """
-
         self._writer.close()
+
+    async def wait_closed(self):
+        await self._writer.wait_closed()
 
     async def _send_command(self, cmd: str):
         """
